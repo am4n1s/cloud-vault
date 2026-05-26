@@ -78,3 +78,15 @@ echo ""
 echo "Test commands:"
 echo "  curl -u viewer:viewer123 http://$MINIKUBE_IP:30080/api/files"
 echo "  curl -u admin:admin123 http://$MINIKUBE_IP:30080/api/files/admin/secret"
+
+# Мониторинг
+echo "[7/7] Deploying Prometheus and Grafana..."
+kubectl apply -f k8s/monitoring/prometheus-config.yaml
+kubectl apply -f k8s/monitoring/grafana-provisioning.yaml
+kubectl apply -f k8s/monitoring/prometheus.yaml
+kubectl apply -f k8s/monitoring/grafana.yaml
+
+MINIKUBE_IP=$(minikube ip)
+echo ""
+echo "Prometheus: http://$MINIKUBE_IP:30090"
+echo "Grafana:    http://$MINIKUBE_IP:30030  (admin/admin123)"
