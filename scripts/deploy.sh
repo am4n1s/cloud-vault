@@ -83,22 +83,22 @@ echo "[7/8] Waiting for all pods to be ready..."
 kubectl wait --for=condition=ready pod \
   -l app=minio \
   -n cloud-vault \
-  --timeout=120s
+  --timeout=900s
 
 kubectl wait --for=condition=ready pod \
   -l app=cloud-vault \
   -n cloud-vault \
-  --timeout=120s
+  --timeout=900s
 
 kubectl wait --for=condition=ready pod \
   -l app=prometheus \
   -n cloud-vault \
-  --timeout=120s
+  --timeout=900s
 
 kubectl wait --for=condition=ready pod \
   -l app=grafana \
   -n cloud-vault \
-  --timeout=120s
+  --timeout=900s
 
 echo ""
 echo "[8/8] Creating MinIO bucket in Kubernetes..."
