@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-app-to-minio
+  namespace: cloud-vault
+spec:
+  podSelector:
+    matchLabels:
+      app: minio
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: cloud-vault
+      ports:
+        - port: 9000

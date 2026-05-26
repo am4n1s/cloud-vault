@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-vault
+  namespace: cloud-vault
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloud-vault
+  template:
+    metadata:
+      labels:
+        app: cloud-vault
+    spec:
+      serviceAccountName: cloud-vault-sa
+      containers:
+        - name: cloud-vault
+          image: cloud-vault:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MINIO_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: cloud-vault-config
+                  key: MINIO_ENDPOINT
+            - name: MINIO_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: cloud-vault-config
+                  key: MINIO_BUCKET
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cloud-vault-secret
+                  key: minio-access-key
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cloud-vault-secret
+                  key: minio-secret-key
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 15
