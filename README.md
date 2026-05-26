@@ -28,7 +28,7 @@ Install these before running:
 ## Quick Start
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/cloud-vault.git
+git clone https://github.com/am4n1s/cloud-vault.git
 cd cloud-vault
 chmod +x scripts/deploy.sh scripts/cleanup.sh
 ./scripts/deploy.sh
