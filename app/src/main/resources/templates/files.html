@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Cloud Vault - Files</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="navbar-brand" href="/files">Cloud Vault</a>
+    <div class="navbar-right">
+        <span th:text="${username}"></span>
+        <span class="badge"
+              th:classappend="${role == 'ROLE_ADMIN'} ? 'badge-admin' : (${role == 'ROLE_EDITOR'} ? 'badge-editor' : 'badge-viewer')"
+              th:text="${role}">
+        </span>
+        <a sec:authorize="hasRole('ADMIN')" href="/admin/secret" class="btn btn-purple">Secret Panel</a>
+        <form th:action="@{/logout}" method="post" style="display:inline">
+            <button type="submit" class="btn btn-secondary">Logout</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+
+    <!-- Upload (EDITOR + ADMIN) -->
+    <div class="card" sec:authorize="hasAnyRole('EDITOR','ADMIN')">
+        <h2>Upload File</h2>
+        <form th:action="@{/files/upload}" method="post" enctype="multipart/form-data">
+            <div class="upload-area">
+                <input type="file" name="file" class="file-input" required>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Files list -->
+    <div class="card">
+        <h2>Storage Files</h2>
+
+        <div th:if="${files.isEmpty()}" class="empty-state">
+            <p>No files found</p>
+        </div>
+
+        <table class="file-table" th:if="${!files.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th sec:authorize="hasRole('ADMIN')">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="file : ${files}">
+                    <td th:text="${file}"></td>
+                    <td sec:authorize="hasRole('ADMIN')">
+                        <form th:action="@{/files/delete}" method="post" style="display:inline">
+                            <input type="hidden" name="key" th:value="${file}">
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Delete this file?')">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

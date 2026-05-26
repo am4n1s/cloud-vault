@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cloud Vault - Login</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="login-wrapper">
+    <div class="login-card">
+        <h1>Cloud Vault</h1>
+        <p>Secure Cloud Storage</p>
+
+        <div th:if="${param.error}" class="alert alert-error">
+            Invalid username or password
+        </div>
+        <div th:if="${param.logout}" class="alert alert-success">
+            You have been logged out
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="enter username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="enter password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+
+        <div class="hint-box">
+            <p>viewer / viewer123 — view files only</p>
+            <p>editor / editor123 — view and upload files</p>
+            <p>admin  / admin123  — full access</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
