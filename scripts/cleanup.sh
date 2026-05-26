@@ -1,8 +1,15 @@
 #!/bin/bash
-echo "=== Cleaning up Cloud Vault ==="
+echo "=================================="
+echo "   Cloud Vault - Cleanup Script   "
+echo "=================================="
 
+echo "Deleting Kubernetes namespace..."
 kubectl delete namespace cloud-vault --ignore-not-found
-docker rm -f dynamodb-local minio 2>/dev/null || true
+
+echo "Stopping Docker containers..."
+docker rm -f dynamodb-local minio cloud-vault-test 2>/dev/null || true
+
+echo "Stopping Minikube..."
 minikube stop
 
-echo "Done!"
+echo "Done! To restart run: ./scripts/deploy.sh"
