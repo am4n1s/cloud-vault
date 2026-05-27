@@ -6,4 +6,5 @@ metadata:
 data:
   MINIO_ENDPOINT: "http://minio-service:9000"
   MINIO_BUCKET: "cloud-vault-bucket"
+  DYNAMODB_ENDPOINT: "http://dynamodb-service:8000"
   SERVER_PORT: "8080"

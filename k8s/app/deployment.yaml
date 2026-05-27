@@ -31,6 +31,11 @@ spec:
                 configMapKeyRef:
                   name: cloud-vault-config
                   key: MINIO_BUCKET
+            - name: DYNAMODB_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: cloud-vault-config
+                  key: DYNAMODB_ENDPOINT
             - name: MINIO_ACCESS_KEY
               valueFrom:
                 secretKeyRef:

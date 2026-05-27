@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cloud Vault - Audit Logs</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="navbar-brand" href="/files">Cloud Vault</a>
+    <div class="navbar-right">
+        <span th:text="${username}"></span>
+        <span class="badge badge-admin" th:text="${role}"></span>
+        <a href="/files" class="btn btn-secondary">Back</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h2>Audit Logs (DynamoDB)</h2>
+
+        <div th:if="${logs.isEmpty()}" class="empty-state">
+            <p>No logs found</p>
+        </div>
+
+        <table class="file-table" th:if="${!logs.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Username</th>
+                    <th>Action</th>
+                    <th>Endpoint</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="log : ${logs}">
+                    <td th:text="${log.timestamp}"></td>
+                    <td th:text="${log.username}"></td>
+                    <td th:text="${log.action}"></td>
+                    <td th:text="${log.endpoint}"></td>
+                    <td th:text="${log.ip}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

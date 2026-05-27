@@ -17,6 +17,7 @@
               th:text="${role}">
         </span>
         <a sec:authorize="hasRole('ADMIN')" href="/admin/secret" class="btn btn-purple">Secret Panel</a>
+        <a sec:authorize="hasRole('ADMIN')" href="/admin/logs" class="btn btn-primary">Audit Logs</a>
         <form th:action="@{/logout}" method="post" style="display:inline">
             <button type="submit" class="btn btn-secondary">Logout</button>
         </form>
