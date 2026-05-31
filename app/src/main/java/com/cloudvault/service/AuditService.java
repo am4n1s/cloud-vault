@@ -32,29 +32,40 @@ public class AuditService {
     private DynamoDB dynamoDB;
     private AmazonDynamoDB client;
     private static final String TABLE_NAME = "AuditLog";
+    private boolean initialized = false;
 
     @PostConstruct
     public void init() {
-        try {
-            client = AmazonDynamoDBClientBuilder.standard()
-                    .withEndpointConfiguration(
-                        new AwsClientBuilder.EndpointConfiguration(dynamoEndpoint, "us-east-1"))
-                    .withCredentials(
-                        new AWSStaticCredentialsProvider(
-                            new BasicAWSCredentials(accessKey, secretKey)))
-                    .build();
+        new Thread(() -> {
+            int attempts = 0;
+            while (!initialized && attempts < 10) {
+                try {
+                    attempts++;
+                    System.out.println("AuditService: Connecting to DynamoDB attempt " + attempts);
+                    client = AmazonDynamoDBClientBuilder.standard()
+                            .withEndpointConfiguration(
+                                new AwsClientBuilder.EndpointConfiguration(dynamoEndpoint, "us-east-1"))
+                            .withCredentials(
+                                new AWSStaticCredentialsProvider(
+                                    new BasicAWSCredentials(accessKey, secretKey)))
+                            .build();
 
-            dynamoDB = new DynamoDB(client);
-            createTableIfNotExists();
-            System.out.println("AuditService connected to DynamoDB: " + dynamoEndpoint);
-        } catch (Exception e) {
-            System.out.println("AuditService: DynamoDB not available: " + e.getMessage());
-        }
+                    dynamoDB = new DynamoDB(client);
+                    createTableIfNotExists();
+                    initialized = true;
+                    System.out.println("AuditService connected to DynamoDB: " + dynamoEndpoint);
+                } catch (Exception e) {
+                    System.out.println("AuditService: DynamoDB not ready, retrying in 10s: " + e.getMessage());
+                    try { Thread.sleep(10000); } catch (InterruptedException ie) { break; }
+                }
+            }
+        }).start();
     }
 
     private void createTableIfNotExists() {
         try {
             client.describeTable(TABLE_NAME);
+            System.out.println("AuditLog table already exists");
         } catch (ResourceNotFoundException e) {
             client.createTable(new CreateTableRequest()
                     .withTableName(TABLE_NAME)
@@ -68,6 +79,10 @@ public class AuditService {
     }
 
     public void log(String username, String action, String endpoint, String ip) {
+        if (!initialized) {
+            System.out.println("AuditService: Not ready yet, skipping log");
+            return;
+        }
         try {
             Table table = dynamoDB.getTable(TABLE_NAME);
             Item item = new Item()
@@ -85,6 +100,7 @@ public class AuditService {
 
     public List<Item> getLogs() {
         List<Item> logs = new ArrayList<>();
+        if (!initialized) return logs;
         try {
             Table table = dynamoDB.getTable(TABLE_NAME);
             table.scan().forEach(logs::add);
